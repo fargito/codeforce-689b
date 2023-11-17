@@ -19,13 +19,26 @@ fn handle(first_line: String, second_line: String) -> String {
 
 #[cfg(test)]
 mod tests {
+    use crate::handle;
 
     #[test]
-    fn test_1() {}
+    fn test_1() {
+        let res = handle("3".to_string(), "2 2 3".to_string());
+
+        assert_eq!(res, "0 1 2");
+    }
 
     #[test]
-    fn test_2() {}
+    fn test_2() {
+        let res = handle("5".to_string(), "1 2 3 4 5".to_string());
+
+        assert_eq!(res, "0 1 2 3 4");
+    }
 
     #[test]
-    fn test_3() {}
+    fn test_3() {
+        let res = handle("7".to_string(), "4 4 4 4 7 7 7".to_string());
+
+        assert_eq!(res, "0 1 2 1 2 3 3");
+    }
 }
