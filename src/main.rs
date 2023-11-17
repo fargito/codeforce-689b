@@ -1,4 +1,4 @@
-use std::io;
+use std::{cmp::min, io};
 
 fn main() -> io::Result<()> {
     let mut first_line = String::new();
@@ -14,7 +14,56 @@ fn main() -> io::Result<()> {
 }
 
 fn handle(first_line: String, second_line: String) -> String {
-    "toto".to_string()
+    // in the first line, we have the number of streets
+    let streets_count: usize = first_line
+        .split_whitespace()
+        .map(|c| c.parse().unwrap())
+        .next()
+        .unwrap();
+
+    let shortcuts: Vec<usize> = second_line
+        .split_whitespace()
+        .map(|c| c.parse().unwrap())
+        .collect();
+
+    println!("{streets_count}, {shortcuts:?}");
+
+    // initialize result array
+    let mut energies: Vec<usize> = Vec::new();
+
+    // TODO cleaner init
+    for _ in 0..streets_count {
+        energies.push(usize::MAX - 1);
+    }
+
+    // algo
+    // for each intersection
+    for i in 0..streets_count {
+        // first set the energy at the current position
+        // special case if O or last element
+        let current_energy = if i == 0 {
+            0
+        } else if i == streets_count - 1 {
+            min(energies[i], energies[i - 1] + 1)
+        } else {
+            min(energies[i], min(energies[i - 1] + 1, energies[i + 1] + 1))
+        };
+        energies[i] = current_energy;
+
+        // jump to the shortcut and set its new value
+        let shortcut_destination = shortcuts[i] - 1;
+
+        let new_shortcut_destination_energy =
+            min(current_energy + 1, energies[shortcut_destination]);
+
+        energies[shortcut_destination] = new_shortcut_destination_energy;
+    }
+
+    energies
+        .iter()
+        .map(|c| c.to_string())
+        .collect::<Vec<String>>()
+        .join(" ")
 }
 
 #[cfg(test)]
