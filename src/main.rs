@@ -34,14 +34,15 @@ fn handle(first_line: String, second_line: String) -> String {
 
     // TODO cleaner init
     for i in 0..streets_count {
+        // we set each energy at maximum so we can find less energy-consuming options
         energies.push(usize::MAX - 1);
+        // we initialize the intersections as a queue with the first indexes in last position
         intersections.push(streets_count - 1 - i);
     }
 
-    // algo
-    // for each intersection
+    // while there is an intersection to analyze
     while let Some(i) = intersections.pop() {
-        // first set the energy at the current position
+        // first set the energy at the current intersection
         // special case if O or last element
         let current_energy = if i == 0 {
             0
@@ -50,7 +51,9 @@ fn handle(first_line: String, second_line: String) -> String {
         } else {
             let current_energy = min(energies[i], min(energies[i - 1] + 1, energies[i + 1] + 1));
 
-            // if greater than previous, put the previous index back for analysis
+            // backtrack: if we have used the energy from the next intersection, and that it is
+            // more advantageous than the previous
+            // if greater than previous, put the previous intersection back in the queue for analysis
             if current_energy < energies[i - 1] + 1 {
                 intersections.push(i - 1);
             }
