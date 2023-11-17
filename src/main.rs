@@ -26,8 +26,6 @@ fn handle(first_line: String, second_line: String) -> String {
         .map(|c| c.parse().unwrap())
         .collect();
 
-    println!("{streets_count}, {shortcuts:?}");
-
     // initialize result array
     let mut energies: Vec<usize> = Vec::new();
 
@@ -57,6 +55,13 @@ fn handle(first_line: String, second_line: String) -> String {
             min(current_energy + 1, energies[shortcut_destination]);
 
         energies[shortcut_destination] = new_shortcut_destination_energy;
+    }
+
+    // we need to backtrack from the end if there are gaps between a value and the previous one
+    for i in streets_count..1 {
+        if energies[i - 1] < energies[i - 2] + 1 {
+            energies[i - 2] = energies[i - 1] + 1;
+        }
     }
 
     energies
