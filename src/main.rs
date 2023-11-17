@@ -29,14 +29,18 @@ fn handle(first_line: String, second_line: String) -> String {
     // initialize result array
     let mut energies: Vec<usize> = Vec::new();
 
+    // initialize the intersections array
+    let mut intersections: Vec<usize> = Vec::new();
+
     // TODO cleaner init
-    for _ in 0..streets_count {
+    for i in 0..streets_count {
         energies.push(usize::MAX - 1);
+        intersections.push(streets_count - 1 - i);
     }
 
     // algo
     // for each intersection
-    for i in 0..streets_count {
+    while let Some(i) = intersections.pop() {
         // first set the energy at the current position
         // special case if O or last element
         let current_energy = if i == 0 {
@@ -44,7 +48,14 @@ fn handle(first_line: String, second_line: String) -> String {
         } else if i == streets_count - 1 {
             min(energies[i], energies[i - 1] + 1)
         } else {
-            min(energies[i], min(energies[i - 1] + 1, energies[i + 1] + 1))
+            let current_energy = min(energies[i], min(energies[i - 1] + 1, energies[i + 1] + 1));
+
+            // if greater than previous, put the previous index back for analysis
+            if current_energy < energies[i - 1] + 1 {
+                intersections.push(i - 1);
+            }
+
+            current_energy
         };
         energies[i] = current_energy;
 
@@ -55,13 +66,6 @@ fn handle(first_line: String, second_line: String) -> String {
             min(current_energy + 1, energies[shortcut_destination]);
 
         energies[shortcut_destination] = new_shortcut_destination_energy;
-    }
-
-    // we need to backtrack from the end if there are gaps between a value and the previous one
-    for i in streets_count..1 {
-        if energies[i - 1] < energies[i - 2] + 1 {
-            energies[i - 2] = energies[i - 1] + 1;
-        }
     }
 
     energies
